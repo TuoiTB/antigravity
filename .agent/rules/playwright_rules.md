@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # Quy Tắc Dành Riêng Cho Playwright
 
 > Áp dụng khi thiết lập và chạy automation với Playwright (TypeScript hoặc Java).
@@ -36,6 +40,7 @@ Playwright cung cấp bộ locator semantic hướng người dùng. Ưu tiên s
 4. `getByText()` — Tốt nhất cho text content
 5. `getByTestId()` — Tốt nhất khi element có `data-testid`
 6. `locator("css")` — Fallback khi không có lựa chọn tốt hơn
+7. `locator("xpath")` — Fallback khi không có lựa chọn tốt hơn
 
 Ví dụ:
 ```typescript

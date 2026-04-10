@@ -1,0 +1,21 @@
+{
+  "name": "security-test-iam",
+  "version": "1.0.0",
+  "description": "Security API tests for IAM integration config — multi-API suite",
+  "scripts": {
+    "test": "playwright test --config=playwright.config.js",
+    "test:email": "playwright test --config=playwright.config.js --project=integration-email",
+    "test:ldap": "playwright test --config=playwright.config.js --project=integration-ldap",
+    "test:module-config": "playwright test --config=playwright.config.js --project=module-integration-configs",
+    "test:all": "playwright test --config=playwright.config.js",
+    "report:email": "node reports/generate_report_email.js",
+    "report:ldap": "node reports/generate_report_ldap.js",
+    "report:module-config": "node reports/generate_report_module_config.js",
+    "show-report": "playwright show-report playwright-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.43.0",
+    "exceljs": "^4.4.0",
+    "typescript": "^5.4.0"
+  }
+}

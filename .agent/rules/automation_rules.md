@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # Quy Tắc Chung cho QA Automation
 
 > Áp dụng cho mọi tác vụ automation testing, bất kể framework (Playwright, Selenium, Appium).
@@ -6,10 +10,14 @@
 
 - Bắt buộc sử dụng mô hình **Page Object Model (POM)**.
 - Phân tách rõ ràng:
-  - **Page classes:** Khai báo locators + methods tương tác UI
+  - **BaseTest:** Khai báo các setup/teardown và cấu hình chung cho tất cả test case.Ví dụ: Khởi tạo và đóng browser, Quản lý config chung, URL môi trường (dev, staging, prod), Timeout
+Credentials dùng chung
+  - **BasePage:** Khai báo các class cha của tất cả các Page Object, dùng để chứa những hành động chung (common actions) khi thao tác với UI.Ví dụ: Những action lặp lại nhiều lần:click, nhập text, lấy text, hover, scroll, Xử lý wait tránh flaky test, handle popup, switch iframe / tab,...
+  - **Page UI:** Khai báo locators
+  - **Page Object:** Tạo các hàm tương tác với UI
   - **Test classes:** Chứa logic kiểm thử + assertions
   - **Test data:** Tách riêng khỏi code chức năng (JSON, DataProvider, Utils)
-- Assertions chỉ đặt trong Test classes, KHÔNG đặt trong Page classes.
+- Assertions chỉ đặt trong Test classes, KHÔNG đặt trong Page Object classes.
 
 ## 2. Sinh Dữ Liệu Test (Test Data)
 

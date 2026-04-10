@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # Chiến Lược Chọn Locator (Áp Dụng Mọi Framework)
 
 > Độ ổn định và khả năng đọc hiểu của locator quyết định sức khỏe của một automation framework.
@@ -39,5 +43,3 @@ Trước khi đưa locator vào code, phải kiểm tra:
 
 Chi tiết locator cho từng framework xem tại:
 - Playwright: `.agent/rules/playwright_rules.md` (Section 3)
-- Selenium: `.agent/rules/selenium_rules.md` (Section 1)
-- Appium: `.agent/rules/appium_rules.md` (Section 1)

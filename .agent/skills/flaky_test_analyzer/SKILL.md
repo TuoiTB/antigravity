@@ -3,68 +3,68 @@ name: Flaky Test Analyzer
 description: Skill phân tích và khắc phục các automation test không ổn định (flaky tests), xác định root cause và đề xuất fix.
 ---
 
-# Flaky Test Analyzer
+# Flaky Test Analyzer (Công cụ Phân tích Test không ổn định)
 
-Purpose: Identify and resolve unstable automation tests.
-
----
-
-## When to Use
-
-Use this skill when:
-
-- A test passes and fails intermittently
-- Test results are inconsistent across runs
-- CI/CD pipeline has unreliable test results
+Mục tiêu: Xác định và khắc phục các kịch bản kiểm thử tự động (automation tests) hoạt động không ổn định.
 
 ---
 
-## Responsibilities
+## Khi nào cần sử dụng
 
-Detect flaky tests caused by:
+Sử dụng skill này khi:
 
-- Unstable locators (dynamic classes, positional xpath)
-- Timing issues (race conditions, slow page loads)
-- Incorrect waits (hard sleep instead of smart waits)
-- Environment dependency (data not cleaned up, external service down)
-- Test data conflicts (shared data between parallel tests)
+- Một ca kiểm thử (test case) lúc Pass lúc Fail một cách ngẫu nhiên.
+- Kết quả kiểm thử không nhất quán giữa các lần chạy khác nhau.
+- Quy trình CI/CD có kết quả kiểm thử không đáng tin cậy.
 
 ---
 
-## Analysis Workflow
+## Trách nhiệm
 
-1. **Detect** — Identify the failing test and reproduce the failure
-2. **Inspect** — Read error logs, stack traces, and screenshots
-3. **Classify** — Categorize the root cause (locator / timing / data / environment)
-4. **Fix** — Apply the appropriate fix strategy
-5. **Verify** — Re-run test multiple times to confirm stability
+Phát hiện và phân tích các Flaky Test gây ra bởi:
+
+- **Locator không ổn định:** (Sử dụng dynamic classes, xpath theo vị trí tuyệt đối).
+- **Vấn đề về thời gian (Timing issues):** (Race conditions, trang tải chậm hoặc phản hồi trễ).
+- **Sử dụng Wait sai cách:** (Dùng hard sleep/fixed delay thay vì smart waits).
+- **Phụ thuộc vào môi trường:** (Dữ liệu không được dọn dẹp sau khi chạy, dịch vụ bên ngoài bị gián đoạn).
+- **Xung đột dữ liệu (Test data conflicts):** (Dùng chung dữ liệu giữa các luồng test chạy song song).
 
 ---
 
-## Common Flaky Causes & Fixes
+## Quy trình phân tích (Analysis Workflow)
 
-### Unstable Locator
+1. **Detect (Phát hiện)** — Xác định test case bị lỗi và tái hiện lại lỗi đó.
+2. **Inspect (Kiểm tra)** — Đọc log lỗi, stack traces và xem ảnh chụp màn hình (screenshots).
+3. **Classify (Phân loại)** — Phân nhóm nguyên nhân gốc rễ (locator / timing / dữ liệu / môi trường).
+4. **Fix (Khắc phục)** — Áp dụng chiến lược sửa lỗi phù hợp.
+5. **Verify (Xác minh)** — Chạy lại bộ test nhiều lần để xác nhận độ ổn định.
 
-**Problem:**
+---
+
+## Các nguyên nhân Flaky phổ biến & Cách khắc phục
+
+### 1. Locator không ổn định (Unstable Locator)
+
+**Vấn đề:**
 ```
 //div[3]/button
 .css-1n2xyz-btn
 ```
 
-**Fix:** Replace with stable locator following priority in `.agent/rules/locator_strategy.md`:
-- `id`, `data-testid`, `name`, `css selector` (stable), `xpath` (relative)
+**Khắc phục:** Thay thế bằng locator ổn định theo thứ tự ưu tiên trong `.agent/rules/locator_strategy.md`:
+- `id`, `data-testid`, `name`, `css selector` (ổn định), `xpath` (tương đối).
 
 ---
 
-### Timing Issues
+### 2. Vấn đề về thời gian (Timing Issues)
 
-**Problem:**
+**Vấn đề:**
 ```java
-Thread.sleep(3000);       // Hard sleep — BAD
-page.waitForTimeout(2000); // Fixed delay — BAD
+Thread.sleep(3000);       // Chờ đợi cứng — RẤT TỆ
+page.waitForTimeout(2000); // Trễ cố định — RẤT TỆ
 ```
 
-**Fix:** Use smart waits as defined in `.agent/rules/selenium_rules.md` and `.agent/rules/playwright_rules.md`:
+**Khắc phục:** Sử dụng smart waits (chờ đợi thông minh) như quy định trong `.agent/rules/selenium_rules.md` và `.agent/rules/playwright_rules.md`:
 ```java
 // Selenium
 WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -76,34 +76,34 @@ await expect(page.getByRole('button', { name: 'Submit' })).toBeVisible();
 
 ---
 
-### Test Data Conflicts
+### 3. Xung đột dữ liệu (Test Data Conflicts)
 
-**Problem:** Tests share mutable data → parallel runs conflict.
+**Vấn đề:** Các bài test dùng chung dữ liệu có thể thay đổi → khi chạy song song sẽ gây xung đột.
 
-**Fix:** Use unique, traceable random data:
+**Khắc phục:** Sử dụng dữ liệu ngẫu nhiên, duy nhất và có khả năng truy vết (traceable):
 ```
 <testName>_<timestamp>@test.com
 ```
 
 ---
 
-## Stability Checklist
+## Danh sách kiểm tra độ ổn định (Stability Checklist)
 
-After fixing a flaky test, verify:
+Sau khi sửa một flaky test, hãy xác nhận:
 
-- [ ] Locator is unique and stable across reloads
-- [ ] No hard sleep or fixed delays
-- [ ] Test data is unique and deterministic
-- [ ] Test is independent (no dependency on other tests)
-- [ ] Test passes 5+ consecutive runs
+- [ ] Locator là duy nhất và ổn định kể cả khi load lại trang.
+- [ ] Không sử dụng hard sleep hoặc fixed delays (trễ cố định).
+- [ ] Dữ liệu test là duy nhất và có tính xác định (deterministic).
+- [ ] Test case độc lập (không phụ thuộc vào kết quả của các test case khác).
+- [ ] Test case vượt qua ít nhất 5 lần chạy liên tiếp.
 
 ---
 
-## Rules References
+## Quy tắc tham chiếu (Rules References)
 
-The agent MUST follow these rules when analyzing flaky tests:
+Agent BẮT BUỘC tuân thủ các quy tắc sau khi phân tích flaky tests:
 
-- `.agent/rules/locator_strategy.md` — Locator stability rules
-- `.agent/rules/automation_rules.md` — General automation best practices
-- `.agent/rules/selenium_rules.md` — Selenium wait strategy
-- `.agent/rules/playwright_rules.md` — Playwright auto-waiting
+- `.agent/rules/locator_strategy.md` — Quy tắc ổn định Locator.
+- `.agent/rules/automation_rules.md` — Best practices chung về automation.
+- `.agent/rules/selenium_rules.md` — Chiến lược wait trong Selenium.
+- `.agent/rules/playwright_rules.md` — Cơ chế tự động đợi (auto-waiting) của Playwright.

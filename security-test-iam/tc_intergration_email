@@ -1,0 +1,91 @@
+"Lỗ hổng SSRF 
+(Ứng dụng lấy URL từ user và thực hiện request mà không validate → cho phép attacker truy cập tài nguyên nội bộ)"		
+[A10:2021] Kiểm tra hệ thống từ chối URL localhost để tránh truy cập hệ thống nội bộ	"1. Mở popup “Chỉnh sửa cấu hình tích hợp”
+2. Nhập URL API = http://localhost:8080
+3. Click “Kiểm tra kết nối”
+4. Send api  kiểm tra BE"	"FE có thể validate và k gửi request
+BE bắt buộc check và hiển thị lỗi: “URL không hợp lệ” (hoặc tương đương)
+Không cho phép lưu cấu hình"
+[A10:2021] Kiểm tra hệ thống chặn địa chỉ loopback 127.0.0.1	"1. Nhập URL ""http://127.0.0.1""
+2. Click “Kiểm tra kết nối”
+3. Send api  kiểm tra BE"	"FE có thể validate và k gửi request
+BE bắt buộc check và hiển thị lỗi: “URL không hợp lệ” (hoặc tương đương)
+Không cho phép lưu cấu hình"
+[A10:2021] Kiểm tra hệ thống Chặn truy cập mạng nội bộ (private IP)	"1. Nhập từng URL ""http://192.168.1.1
+hoặc  http://10.0.0.1
+hoặc http://172.16.0.1""
+2. Click “Kiểm tra kết nối”
+3. Send api  kiểm tra BE"	"FE có thể validate và k gửi request
+BE bắt buộc check và hiển thị lỗi: “URL không hợp lệ” (hoặc tương đương)
+Không cho phép lưu cấu hình"
+[A10:2021] Kiểm tra hệ thống Ngăn truy cập metadata của cloud	"1. Nhập từng URL ""http://169.254.169.254/latest/meta-data""
+2. Click “Kiểm tra kết nối”
+3. Send api  kiểm tra BE"	"FE có thể validate và k gửi request
+BE bắt buộc check và hiển thị lỗi: “URL không hợp lệ” (hoặc tương đương)
+Không cho phép lưu cấu hình"
+[A10:2021] Kiểm tra hệ thống Ngăn SSRF thông qua redirect về internal	"1. Nhập từng URL ""http://httpbin.org/redirect-to?url=http://localhost:8080""
+2. Click “Kiểm tra kết nối”
+3. Send api  kiểm tra BE"	"FE có thể validate và k gửi request
+BE bắt buộc check và Detect URL sau redirect và chặn và hiển thị lỗi: “URL không hợp lệ” (hoặc tương đương)
+Không cho phép lưu cấu hình"
+[A10:2021] Kiểm tra hệ thống Ngăn bypass qua DNS rebinding	"1. Nhập từng URL ""http://attacker-domain.com""
+2. Click “Kiểm tra kết nối”
+3. Send api  kiểm tra BE"	"FE có thể validate và k gửi request
+BE bắt buộc check và resolve domain → IP
+Nếu IP là private → reject và hiển thị lỗi: “URL không hợp lệ” (hoặc tương đương)
+Không cho phép lưu cấu hình"
+[A10:2021] Kiểm tra hệ thống Phát hiện blind SSRF (Ngăn request ngầm từ server ra ngoài)	"1. Nhập URL ""http://webhook.site/your-id""
+2. Click “Kiểm tra kết nối”
+3. Send api  kiểm tra BE 
+4. Kiểm tra log tại webhook.site
+"	"2. FE có thể validate và k gửi request
+4. Không có request nào được gửi từ server
+Nếu có → BUG CRITICAL"
+[A10:2021] Kiểm tra hệ thống Chặn protocol không hợp lệ (Không cho phép protocol nguy hiểm)	"1. Nhập từng URL :
+""file:///etc/passwd
+ftp://example.com
+gopher://127.0.0.1""
+2. Click “Kiểm tra kết nối”
+3. Send api  kiểm tra BE"	"2. FE có thể validate và k gửi request
+4. BE bắt buộc check và Reject toàn bộ và  hiển thị lỗi: “URL không hợp lệ” (hoặc tương đương)"
+[A02:2021] Kiểm tra hệ thống chỉ cho phép HTTPS	"1. Nhập từng URL :
+""http://example.com""
+2. Click “Kiểm tra kết nối”
+3. Send api  kiểm tra BE"	"2. FE có thể validate và k gửi request
+4. BE bắt buộc check và Reject và  hiển thị lỗi: “URL không hợp lệ” (hoặc tương đương)"
+[A10:2021] Kiểm tra hệ thống Ngăn quét port nội bộ (Không cho phép scan port qua SSRF)	"1. Nhập từng URL :
+""http://localhost:22
+http://localhost:3306
+http://localhost:6379""
+2. Click “Kiểm tra kết nối”
+3. Send api  kiểm tra BE"	"2. FE có thể validate và k gửi request
+4. BE bắt buộc check và Reject và  hiển thị lỗi: “URL không hợp lệ” (hoặc tương đương)"
+[A10:2021] Kiểm tra hệ thống Phát hiện IP encode (decimal/hex)	"1. Nhập từng URL :
+""http://2130706433
+http://0x7f000001""
+2. Click “Kiểm tra kết nối”
+3. Send api  kiểm tra BE"	"FE có thể validate và k gửi request
+BE bắt buộc check và resolve về IP thật, Reject nếu là localhost và hiển thị lỗi: “URL không hợp lệ” (hoặc tương đương)
+Không cho phép lưu cấu hình"
+[A10:2021] Kiểm tra hệ thống Ngăn bypass bằng encoding URL	"1. Nhập từng URL :
+""http://127.0.0.1%2f
+http://localhost%00.example.com""
+2. Click “Kiểm tra kết nối”
+3. Send api  kiểm tra BE"	"FE có thể validate và k gửi request
+BE bắt buộc check và reject và không bypass validation và hiển thị lỗi: “URL không hợp lệ” (hoặc tương đương)
+Không cho phép lưu cấu hình"
+[A05:2021] Kiểm tra whitelist domain: Chỉ cho phép domain hợp lệ	"1. Nhập từng URL :
+""http://mail.company.com
+http://evil.com""
+2. Click “Kiểm tra kết nối”
+3. Send api  kiểm tra BE"	"BE bắt buộc check
+Domain hợp lệ → OK
+Domain không hợp lệ → reject và hiển thị lỗi: “URL không hợp lệ” (hoặc tương đương)
+Không cho phép lưu cấu hình"
+[A09:2021] Kiểm tra hệ thống Không lộ thông tin nhạy cảm trong log	"1. Nhập từng URL :
+""http://internal-service/admin""
+2. Click “Kiểm tra kết nối”
+3. Send api  kiểm tra BE
+4. Kiểm tra log server"	"BE bắt buộc check
+Không log full URL nhạy cảm
+Không log response nội bộ"
