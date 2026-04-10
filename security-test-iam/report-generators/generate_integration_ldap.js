@@ -1,7 +1,13 @@
 const ExcelJS = require('exceljs');
 const path = require('path');
+const fs = require('fs');
 
-const OUTPUT_FILE = path.join(__dirname, 'security_test_report_ldap.xlsx');
+const reportsDir = path.join(__dirname, '..', 'reports');
+if (!fs.existsSync(reportsDir)) {
+  fs.mkdirSync(reportsDir, { recursive: true });
+}
+
+const OUTPUT_FILE = path.join(reportsDir, 'security_test_report_ldap.xlsx');
 
 // ════════════════════════════════════════════════════════════════════
 // KẾT QUẢ TEST — 44 TC | 37 FAIL | 7 PASS | Thời gian: ~32 giây
